@@ -1,2 +1,5 @@
 <RCC>
+    <qresource prefix="/cats/images">
+        <file>cat1.jpg</file>
+    </qresource>
 </RCC>

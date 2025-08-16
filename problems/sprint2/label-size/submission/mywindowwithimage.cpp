@@ -20,6 +20,7 @@ MyWindowWithImage::MyWindowWithImage(QWidget *parent)
     // Не делайте так в реальных программах.
     QString image_path = MACRO_TO_STR(ILOVEQT_IMAGE_FULL_PATH);
     SetPixmap(ui->lbl_pixmap, image_path);
+    this->setFixedSize(ui->lbl_pixmap->width(), ui->lbl_pixmap->height());
 }
 
 MyWindowWithImage::~MyWindowWithImage()
@@ -35,7 +36,14 @@ void MyWindowWithImage::SetPixmap(QLabel *label_pix, const QString path)
     Q_ASSERT(!pix.isNull());
 
     label_pix->setPixmap( pix );
+    FitToImage(label_pix);
     label_pix->show();
 }
 
-// Запишите здесь реализацию нового метода.
+void MyWindowWithImage::FitToImage(QLabel* lbl){
+    int width = lbl->width();
+    int height = lbl->height();
+    lbl->move(0, 0);
+    lbl->setFixedSize(width, height);
+    this->setFixedSize(width, height);
+}

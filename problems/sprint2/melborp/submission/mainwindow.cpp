@@ -11,3 +11,14 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow() {
     delete ui;
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    QString result;
+    QString text = ui->lineEdit->text();
+    for(int i = text.size() - 1; i >= 0; i--)    {
+        result += text[i];
+    }
+    ui->lineEdit->setText(result);
+}
+

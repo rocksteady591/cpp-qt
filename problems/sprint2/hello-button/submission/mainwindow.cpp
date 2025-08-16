@@ -11,3 +11,11 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow() {
     delete ui;
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    QString name = ui->le_input->text();
+    auto result = "Привет из Qt, " + name + "!";
+    ui->lbl_result->setText(result);
+}
+

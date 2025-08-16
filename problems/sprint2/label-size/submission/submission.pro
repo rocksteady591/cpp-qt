@@ -1,5 +1,5 @@
 ########
-MOCK_LIB=../../../../mocks_library
+MOCK_LIB=C:/Users/rocks/OneDrive/изображения/
 ########
 
 QT       += core gui
