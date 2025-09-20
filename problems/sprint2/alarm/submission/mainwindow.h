@@ -3,7 +3,6 @@
 #include <QMainWindow>
 #include <prac/QTimer>
 #include <prac/QMediaPlayer>
-#include <prac/QTime>
 #include <prac/QDateTime>
 #include <QAudioOutput>
 
@@ -24,9 +23,15 @@ public:
     }
 
 private slots:
-    // Тут объявите слоты.
+    void slot_update_time_now();
+    void slot_set_melody();
+    void slot_close_app();
+    void on_pb_start_stop_clicked();
 
 private:
     Ui::MainWindow *ui;
     QDateTime alarm_moment_;
+    prac::QTimer timer_{this};
+    prac::QMediaPlayer player_{this};
+    QAudioOutput audio_output_{this};
 };

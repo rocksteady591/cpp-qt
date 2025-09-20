@@ -36,5 +36,6 @@ private:
     prac::QMediaPlayer player_{this};
     QAudioOutput audio_output_{this};
     bool position_changing_ = false;
+    bool is_pause_ = false;
 };
 #endif // MAINWINDOW_H

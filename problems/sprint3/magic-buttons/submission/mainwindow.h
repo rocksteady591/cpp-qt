@@ -33,4 +33,5 @@ private:
     Ui::MainWindow *ui;
     Setting* setting_ = new Setting();
     std::vector<QPushButton*> buttons_;
+    std::vector<std::function<void()>> actions_;
 };

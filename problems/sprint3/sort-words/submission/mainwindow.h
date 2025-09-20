@@ -29,5 +29,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QStringList line_;
+    bool start_ = false;
 };
 #endif // MAINWINDOW_H

@@ -34,21 +34,26 @@ int CalculateDaysFromStartYear(int day, int month, int year)
 
 QString MainWindow::GetFormatType1(int day, int month, int year)
 {
-    // Реализуйте метод форматирования даты.
+    return QString::number(day) + "." + QString::number(month) + "." + QString::number(year);
 }
 
 QString MainWindow::GetFormatType2(int day, int month, int year)
 {
-    // Реализуйте метод форматирования даты.
+    return QString::number(day) + "/" + QString::number(month) + "/" + QString::number(year);
 }
 
 QString MainWindow::GetFormatType3(int day, int month, int year)
 {
-    // Реализуйте метод форматирования даты.
+    static const QString months[] = {
+        "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    };
+
+    return QString::number(day) + " " + months[month - 1] + " " + QString::number(year);
 }
 
 QString MainWindow::GetStrNumDays(int num_days, int year) {
-    // Метод должен возвращать текст о номере дня в году.
+    return "Это " + QString::number(num_days) + " день в " + QString::number(year);
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -57,7 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Установите валидаторы.
+    ui->le_day->setValidator(new QIntValidator(1, 31, this));
+
+    ui->le_month->setValidator(new QIntValidator(1, 12, this));
+
+    ui->le_year->setValidator(new QIntValidator(1, 9999, this));
 
     SetError("Некорректная дата");
 }
@@ -65,6 +74,14 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::CheckValidity(QLineEdit* elem){
+    if (elem->hasAcceptableInput()) {
+        elem->setStyleSheet("border:1px solid transparent");
+    } else {
+        elem->setStyleSheet("border:1px solid red");
+    }
 }
 
 void MainWindow::ShowFormattedDate()
@@ -77,13 +94,24 @@ void MainWindow::ShowFormattedDate()
         return;
     }
 
-    // Отобразим результаты.
-    // Используйте DaysPerMonth для определения количества дней в месяце.
-    // Используйте CalculateDaysFromStartYear для определения номера дня в году.
+    int day = ui->le_day->text().toInt();
+    int month = ui->le_month->text().toInt();
+    int year = ui->le_year->text().toInt();
 
-    // Используйте GetFormatType1, GetFormatType2, GetFormatType3 и GetStrNumDays
-    // для определения надписей, которые нужно вывести пользователю.
-    // Эти методы реализуйте самостоятельно.
+    if (month <= 0 || day <= 0 || year <= 0) {
+        SetError("Некорректная дата");
+        return;
+    }
+
+    if(day > DaysPerMonth(month, year)){
+        SetError("Некорректная дата");
+        return;
+    }
+    int days_from_start_year = CalculateDaysFromStartYear(day, month, year);
+    ui->lbl_format_type1->setText(GetFormatType1(day, month, year));
+    ui->lbl_format_type2->setText(GetFormatType2(day, month, year));
+    ui->lbl_format_type3->setText(GetFormatType3(day, month, year));
+    ui->lbl_message->setText(GetStrNumDays(days_from_start_year, year));
 }
 
 void MainWindow::SetError(const QString& err_text)
@@ -96,15 +124,75 @@ void MainWindow::SetError(const QString& err_text)
 
 void MainWindow::on_le_day_textChanged(const QString&)
 {
-    // Пользователь изменил день. Реализуйте слот.
+    CheckValidity(ui->le_day);
+    ShowFormattedDate();
+    UpdateLeDate();
 }
 
 void MainWindow::on_le_month_textChanged(const QString&)
 {
-    // Пользователь изменил месяц. Реализуйте слот.
+    CheckValidity(ui->le_month);
+    ShowFormattedDate();
+    UpdateLeDate();
 }
 
 void MainWindow::on_le_year_textChanged(const QString&)
 {
-    // Пользователь изменил год. Реализуйте слот.
+    CheckValidity(ui->le_year);
+    ShowFormattedDate();
+    UpdateLeDate();
 }
+
+void MainWindow::UpdateLeDate()
+{
+    QString day = ui->le_day->text();
+    QString month = ui->le_month->text();
+    QString year = ui->le_year->text();
+
+    // если какое-то поле пустое — не стираем всё, просто выходим
+    if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
+        return;
+    }
+
+    // если что-то некорректное — тоже не трогаем le_date
+    if (!ui->le_day->hasAcceptableInput() ||
+        !ui->le_month->hasAcceptableInput() ||
+        !ui->le_year->hasAcceptableInput()) {
+        return;
+    }
+
+    QString dateStr = QString("%1.%2.%3").arg(day).arg(month).arg(year);
+
+    QSignalBlocker blocker(ui->le_date);
+    ui->le_date->setText(dateStr);
+}
+
+
+
+void MainWindow::on_le_date_textChanged(const QString &arg1)
+{
+    QSignalBlocker b1(ui->le_day);
+    QSignalBlocker b2(ui->le_month);
+    QSignalBlocker b3(ui->le_year);
+
+    if (arg1.isEmpty()) {
+        ui->le_day->clear();
+        ui->le_month->clear();
+        ui->le_year->clear();
+        SetError("Некорректная дата");
+    } else {
+        QStringList dats = arg1.split(".");
+        if (dats.size() == 3) {
+            ui->le_day->setText(dats[0]);
+            ui->le_month->setText(dats[1]);
+            ui->le_year->setText(dats[2]);
+        } else {
+            //  не очищаем day/month/year, иначе ввод слетает
+            SetError("Некорректная дата");
+        }
+    }
+
+    ShowFormattedDate();
+}
+
+

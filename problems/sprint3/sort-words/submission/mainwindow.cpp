@@ -16,20 +16,40 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_rb_asc_clicked()
 {
-    // Ваш код.
+    std::sort(line_.begin(), line_.end(), [](const QString& word1, const QString& word2){
+        return QString::compare(word1, word2, Qt::CaseInsensitive) < 0;
+    });
+    QString result = line_.join(" ");
+    ui->le_sorted->setText(result);
+    start_ = false;
 }
 
 void MainWindow::on_rb_desc_clicked()
 {
-    // Ваш код.
+    std::sort(line_.begin(), line_.end(), [](const QString& word1, const QString& word2){
+        return QString::compare(word1, word2, Qt::CaseInsensitive) > 0;
+    });
+    QString result = line_.join(" ");
+    ui->le_sorted->setText(result);
+    start_ = true;
 }
 
 void MainWindow::on_cb_case_clicked()
 {
-    // Ваш код.
+    std::sort(line_.begin(), line_.end(), [](const QString& word1, const QString& word2){
+        return QString::compare(word1, word2) > 0;
+    });
+    QString result = line_.join(" ");
+    ui->le_sorted->setText(result);
 }
 
-void MainWindow::on_le_unsorted_textChanged(const QString&)
+void MainWindow::on_le_unsorted_textChanged(const QString &arg1)
 {
-    // Ваш код.
+    line_ = arg1.split(" ");
+    if(!start_){
+        on_rb_asc_clicked();
+    }else{
+        on_rb_desc_clicked();
+    }
+
 }

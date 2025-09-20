@@ -68,13 +68,8 @@ QString GetAnimalForZoroastrianCalendar(int year) {
     return years[year % 32];
 }
 
-struct MonthItem {
-    int from;
-    QString label;
-};
 
-class DayMarker {
-    int DaysPerMonth(int month, int year) {
+    int DayMarker::DaysPerMonth(int month, int year) {
         if (month == 2) {
             if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
                 return 29; // February in a leap year.
@@ -88,12 +83,11 @@ class DayMarker {
         }
     }
 
-public:
-    DayMarker(std::vector<std::vector<MonthItem>> items)
+    DayMarker::DayMarker(std::vector<std::vector<MonthItem>> items)
         : items_(items) {
     }
 
-    QString Get(int month, int day, int year) {
+    QString DayMarker::Get(int month, int day, int year) {
         if (day > DaysPerMonth(month, year)) {
             return {};
         }
@@ -111,10 +105,6 @@ public:
         }
         return {};
     }
-
-private:
-    std::vector<std::vector<MonthItem>> items_;
-};
 
 QString GetZodiac(int day, int month, int year) {
     // Используем static-переменную. Это значит, что

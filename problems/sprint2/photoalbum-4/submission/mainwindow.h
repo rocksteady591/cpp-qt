@@ -1,1 +1,56 @@
-решение задачи photoalbum-3
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QLabel>
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
+QT_END_NAMESPACE
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+    void SetPixmap(const QString path) {
+        active_pixmap = QPixmap(path);
+    }
+
+    void FitImage();
+    void SetFolder(const QString& d);
+    QString GetCurrentFile();
+
+private slots:
+    void on_btn_right_clicked();
+
+    void on_btn_left_clicked();
+
+    void slotClickOpenMenu(QPoint pos);
+
+    void slotClicOpenFile();
+
+    void slotSetDefaultFolder();
+
+    void slotSetUpToWindow();
+
+    void slotCloseApp();
+
+private:
+    void resizeEvent(QResizeEvent *event) override;
+    void UpdateEnabled();
+
+private:
+    Ui::MainWindow *ui;
+    QPixmap active_pixmap;
+    QLabel lbl_new_{this};
+    QString current_folder_ = ":/cats/images/";
+    int cur_file_index_ = 0;
+    bool state_ = true;
+};
+#endif // MAINWINDOW_H

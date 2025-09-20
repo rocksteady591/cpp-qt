@@ -26,6 +26,7 @@ private:
     QString GetStrNumDays(int num_days, int year);
     void ShowFormattedDate();
     void SetError(const QString& err_text);
+    void UpdateLeDate();
 
 private slots:
     void on_le_date_textChanged(const QString&);

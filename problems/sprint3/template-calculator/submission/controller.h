@@ -41,7 +41,7 @@ class Controller
 public:
     Controller() {}
 
-    void BindWithMainWindow(MainWindow* main_window) {
+    void BindWithMainWindow(::MainWindow* main_window) {
         view_ = main_window;
         if (!view_) {
             return;
@@ -254,7 +254,7 @@ private:
     Number active_number_ = {};
     std::string input_;
 
-    MainWindow* view_ = nullptr;
+    ::MainWindow* view_ = nullptr;
 
     std::optional<Number> mem_ = {};
 

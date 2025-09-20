@@ -11,6 +11,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
 #include <prac/QTimer>
+#include <prac/QFileDialog>
 
 #include <mainwindow.h>
 

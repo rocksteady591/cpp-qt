@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget* parent)
     calculator_.Set(0.0);
 }
 
-
 MainWindow::~MainWindow() {
     delete ui;
 }
@@ -31,75 +30,24 @@ void MainWindow::SetText(const QString& text){
     ui->l_result->setText(input_number_);
 }
 
-void MainWindow::on_pb_one_clicked()
-{
-    AddText("1");
-}
+void MainWindow::on_pb_one_clicked(){ AddText("1"); }
+void MainWindow::on_pb_two_clicked(){ AddText("2"); }
+void MainWindow::on_pb_three_clicked(){ AddText("3"); }
+void MainWindow::on_pb_four_clicked(){ AddText("4"); }
+void MainWindow::on_pb_five_clicked(){ AddText("5"); }
+void MainWindow::on_pb_six_clicked(){ AddText("6"); }
+void MainWindow::on_pb_seven_clicked(){ AddText("7"); }
+void MainWindow::on_pb_eight_clicked(){ AddText("8"); }
+void MainWindow::on_pb_nine_clicked(){ AddText("9"); }
+void MainWindow::on_pb_zero_clicked(){ AddText("0"); }
 
-
-void MainWindow::on_pb_two_clicked()
-{
-    AddText("2");
-}
-
-
-void MainWindow::on_pb_three_clicked()
-{
-    AddText("3");
-}
-
-
-void MainWindow::on_pb_four_clicked()
-{
-    AddText("4");
-}
-
-
-void MainWindow::on_pb_five_clicked()
-{
-    AddText("5");
-}
-
-
-void MainWindow::on_pb_six_clicked()
-{
-    AddText("6");
-}
-
-
-void MainWindow::on_pb_seven_clicked()
-{
-    AddText("7");
-}
-
-
-void MainWindow::on_pb_eight_clicked()
-{
-    AddText("8");
-}
-
-
-void MainWindow::on_pb_nine_clicked()
-{
-    AddText("9");
-}
-
-
-void MainWindow::on_pb_zero_clicked()
-{
-    AddText("0");
-}
-
-
-void MainWindow::on_pb_dot_clicked()
-{
+void MainWindow::on_pb_dot_clicked(){
     if(!input_number_.contains(".")){
         AddText(".");
     }
 }
 
-void MainWindow::on_pb_delete_clicked()
-{
+void MainWindow::on_pb_delete_clicked(){
     input_number_.chop(1);
     SetText(input_number_);
     active_number_ = input_number_.toDouble();
@@ -115,17 +63,10 @@ QString MainWindow::RemoveTrailingZeroes(const QString &text) {
 }
 
 QString MainWindow::NormalizeNumber(const QString &text) {
-    if (text.isEmpty()) {
-        return "0";
-    }
-    if (text.startsWith('.')) {
-        // Рекурсивный вызов.
-        return NormalizeNumber("0" + text);
-    }
-    if (text.startsWith('-')) {
-        // Рекурсивный вызов.
-        return "-" + NormalizeNumber(text.mid(1));
-    }
+    if (text.isEmpty()) return "0";
+    if (text == "-") return "-";
+    if (text.startsWith('.')) return NormalizeNumber("0" + text);
+    if (text.startsWith('-')) return "-" + NormalizeNumber(text.mid(1));
     if (text.startsWith('0') && !text.startsWith("0.")) {
         return NormalizeNumber(RemoveTrailingZeroes(text));
     }
@@ -133,47 +74,21 @@ QString MainWindow::NormalizeNumber(const QString &text) {
 }
 
 void MainWindow::SetOperation(Operation op) {
-    if (!input_number_.isEmpty()) {
-        calculator_.Set(input_number_.toDouble());
-    } else {
-        // если ввода нет — используем текущее показанное число
-        calculator_.Set(ui->l_result->text().toDouble());
+    if (current_operation_ == Operation::NO_OPERATION) {
+        const QString src = input_number_.isEmpty() ? ui->l_result->text() : input_number_;
+        calculator_.Set(src.toDouble());
+        input_number_.clear();
     }
 
     current_operation_ = op;
-    // Отображаем число в формуле с той же точностью
     ui->l_formula->setText(FormatDouble(calculator_.GetNumber()) + " " + OpToString(current_operation_));
-    input_number_.clear();
 }
 
-void MainWindow::on_pb_add_clicked()
-{
-    SetOperation(Operation::ADDITION);
-}
-
-
-void MainWindow::on_pb_substraction_clicked()
-{
-    SetOperation(Operation::SUBTRACTION);
-}
-
-
-void MainWindow::on_pb_multiply_clicked()
-{
-    SetOperation(Operation::MULTIPLICATION);
-}
-
-
-void MainWindow::on_pb_division_clicked()
-{
-    SetOperation(Operation::DIVISION);
-}
-
-
-void MainWindow::on_pb_pow_clicked()
-{
-    SetOperation(Operation::POWER);
-}
+void MainWindow::on_pb_add_clicked(){ SetOperation(Operation::ADDITION); }
+void MainWindow::on_pb_substraction_clicked(){ SetOperation(Operation::SUBTRACTION); }
+void MainWindow::on_pb_multiply_clicked(){ SetOperation(Operation::MULTIPLICATION); }
+void MainWindow::on_pb_division_clicked(){ SetOperation(Operation::DIVISION); }
+void MainWindow::on_pb_pow_clicked(){ SetOperation(Operation::POWER); }
 
 QString MainWindow::OpToString(Operation op) {
     switch(op) {
@@ -184,21 +99,22 @@ QString MainWindow::OpToString(Operation op) {
     case Operation::SUBTRACTION: return "−";
     case Operation::POWER: return "^";
     }
+    return "";
 }
 
-void MainWindow::on_pb_clear_clicked()
-{
+void MainWindow::on_pb_clear_clicked(){
     ui->l_result->setText("0");
-    //ui->l_memory->setText("");
     ui->l_formula->setText("");
     input_number_.clear();
     active_number_ = 0;
     current_operation_ = Operation::NO_OPERATION;
 }
 
-
 void MainWindow::on_pb_change_of_sign_clicked() {
-    // Не меняем знак, если число 0
+    if (input_number_.isEmpty()) {
+        input_number_ = ui->l_result->text();
+    }
+
     if (input_number_ == "0" || input_number_ == "-0") {
         return;
     }
@@ -211,10 +127,9 @@ void MainWindow::on_pb_change_of_sign_clicked() {
     SetText(input_number_);
 }
 
-
 void MainWindow::on_pb_result_clicked() {
     if (current_operation_ != Operation::NO_OPERATION) {
-        double rhs = 0.0;
+        Number rhs = 0.0;
         if (!input_number_.isEmpty()) {
             rhs = input_number_.toDouble();
         } else {
@@ -225,36 +140,23 @@ void MainWindow::on_pb_result_clicked() {
         QString formula = ui->l_formula->text() + " " + formula_rhs;
 
         switch (current_operation_) {
-        case Operation::ADDITION:       calculator_.Add(rhs); break;
-        case Operation::SUBTRACTION:    calculator_.Sub(rhs); break;
-        case Operation::MULTIPLICATION: calculator_.Mul(rhs); break;
-        case Operation::DIVISION:       calculator_.Div(rhs); break;
-        case Operation::POWER:          calculator_.Pow(rhs); break;
+        case Operation::ADDITION:      calculator_.Add(rhs); break;
+        case Operation::SUBTRACTION:   calculator_.Sub(rhs); break;
+        case Operation::MULTIPLICATION:calculator_.Mul(rhs); break;
+        case Operation::DIVISION:      calculator_.Div(rhs); break;
+        case Operation::POWER:         calculator_.Pow(rhs); break;
         default: break;
         }
-
         active_number_ = calculator_.GetNumber();
-
-        // Форматируем результат с достаточной точностью
         QString result = FormatDouble(active_number_);
-
-        // Устанавливаем только текст результата (не вызывать SetText — она манипулирует input и NormalizeNumber)
         ui->l_result->setText(result);
         ui->l_formula->setText(formula + " =");
-
-        // Сохраняем строковое представление с полной точностью, чтобы не терять данные при последующем toDouble()
         input_number_ = result;
         current_operation_ = Operation::NO_OPERATION;
     }
 }
 
-
-
-
-
-
 void MainWindow::on_pb_save_number_clicked() {
-    // Если пользователь просто ввёл число — учесть его
     if (!input_number_.isEmpty()) {
         calculator_.Set(input_number_.toDouble());
     }
@@ -262,7 +164,6 @@ void MainWindow::on_pb_save_number_clicked() {
     calculator_.Save();
     ui->l_memory->setText("M");
 }
-
 
 void MainWindow::on_pb_memory_clear_clicked() {
     calculator_.ClearMemory();
@@ -279,9 +180,6 @@ void MainWindow::on_pb_memory_read_clicked() {
     }
 }
 
-QString MainWindow::FormatDouble(double v) {
+QString MainWindow::FormatDouble(Number v) {
     return QString::number(v, 'g', 15);
 }
-
-
-
